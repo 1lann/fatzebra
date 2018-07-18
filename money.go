@@ -20,9 +20,20 @@ func (a AUD) Cents() int64 {
 	return int64(a)
 }
 
-// MarshalJSON implements the JSON unmarshaller interface.
+// MarshalJSON implements the JSON marshaller interface.
 func (a AUD) MarshalJSON() ([]byte, error) {
 	return []byte(strconv.FormatInt(int64(a), 10)), nil
+}
+
+// UnmarshalJSON implements the JSON unmarshaller interface.
+func (a *AUD) UnmarshalJSON(data []byte) error {
+	n, err := strconv.ParseInt(string(data), 10, 64)
+	if err != nil {
+		return err
+	}
+
+	*a = NewAUDFromCents(n)
+	return nil
 }
 
 // NewAUDFromCents returns the currency representation from a given number

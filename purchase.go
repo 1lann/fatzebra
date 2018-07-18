@@ -86,7 +86,7 @@ type Purchase struct {
 	CardType        string    `json:"card_type"`
 	CardCategory    string    `json:"card_category"`
 	CardSubcategory string    `json:"card_subcategory"`
-	Amount          int       `json:"amount"`
+	Amount          AUD       `json:"amount"`
 	Successful      bool      `json:"successful"`
 	Message         string    `json:"message"`
 	Reference       string    `json:"reference"`
