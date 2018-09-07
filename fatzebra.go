@@ -36,8 +36,9 @@ type ClientOpts struct {
 	Password  string
 	Secret    string
 	Host      string
-	MaxAmount AUD
-	Client    *http.Client
+	MaxAmount AUD // Provides last chance protection against charging
+	// unintentionally large amounts in a single transaction.
+	Client *http.Client
 }
 
 // NewClient returns a new client with the given options.
