@@ -142,6 +142,10 @@ func (c *Client) DoPurchase(ctx context.Context,
 
 	defer resp.Body.Close()
 
+	if resp.StatusCode != http.StatusOK {
+		return nil, errors.New("fatzebra: not OK: " + resp.Status)
+	}
+
 	var result purchaseResult
 	err = json.NewDecoder(resp.Body).Decode(&result)
 	if err != nil {

@@ -19,6 +19,10 @@ func (t *Transport) RoundTrip(req *http.Request) (*http.Response, error) {
 	r := cloneRequest(req)
 	r.SetBasicAuth(t.c.username, t.c.password)
 
+	if t.base == nil {
+		return http.DefaultTransport.RoundTrip(r)
+	}
+
 	return t.base.RoundTrip(r)
 }
 

@@ -1,17 +1,14 @@
 package fatzebra
 
 import (
-	"crypto/hmac"
-	"crypto/md5"
 	"errors"
-	"hash"
 	"net/http"
 )
 
 // Endpoints provided for convenience.
 const (
-	SandboxEndpoint    = "gateway.sandbox.fatzebra.com.au"
-	ProductionEndpoint = "gateway.fatzebra.com.au"
+	SandboxEndpoint    = "gateway.pmnts-sandbox.io"
+	ProductionEndpoint = "gateway.pmnts.io"
 )
 
 // Possible errors returned.
@@ -26,7 +23,7 @@ type Client struct {
 	username  string
 	password  string
 	host      string
-	hasher    hash.Hash
+	secret    []byte
 	maxAmount AUD
 }
 
@@ -51,7 +48,7 @@ func NewClient(opts *ClientOpts) *Client {
 		username:  opts.Username,
 		password:  opts.Password,
 		host:      opts.Host,
-		hasher:    hmac.New(md5.New, []byte(opts.Secret)),
+		secret:    []byte(opts.Secret),
 		maxAmount: opts.MaxAmount,
 	}
 
