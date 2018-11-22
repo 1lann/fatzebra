@@ -8,9 +8,9 @@ import (
 	"net/url"
 )
 
-// purchasesListingResult represents a result returned by listing or
+// purchasesResult represents a result returned by listing or
 // retrieving purchases.
-type purchasesListingResult struct {
+type purchasesResult struct {
 	Successful   bool        `json:"successful"`
 	Response     []*Purchase `json:"response"`
 	Errors       []string    `json:"errors"`
@@ -18,12 +18,6 @@ type purchasesListingResult struct {
 	TotalRecords int         `json:"total_records"`
 	Page         int         `json:"page"`
 	TotalPages   int         `json:"total_pages"`
-}
-
-type purchasesResult struct {
-	Successful bool      `json:"successful"`
-	Response   *Purchase `json:"response"`
-	Errors     []string  `json:"errors"`
 }
 
 // GetPurchaseByReference retrieves a purchase by its reference code.
@@ -64,5 +58,9 @@ func (c *Client) GetPurchaseByReference(ctx context.Context,
 			result.Errors[0])
 	}
 
-	return result.Response, nil
+	if len(result.Response) == 0 {
+		return nil, ErrNotFound
+	}
+
+	return result.Response[0], nil
 }
