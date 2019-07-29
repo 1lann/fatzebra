@@ -30,6 +30,16 @@ func (e *ValidationError) Error() string {
 	return "fatzebra: error response: " + e.Errors[0]
 }
 
+// UnknownError represents an unknown error, you should assume that the
+// the payment could have succeeded.
+type UnknownError struct {
+	Underlying error
+}
+
+func (e *UnknownError) Error() string {
+	return "fatzebra: unknown error: " + e.Underlying.Error()
+}
+
 // Zap logs the information in the error response to a zap logger.
 func (e *ValidationError) Zap(l *zap.SugaredLogger) {
 	l.Named("fatzebra").Errorw("received unsuccessful result",
@@ -137,13 +147,13 @@ func (c *Client) DoPurchase(ctx context.Context,
 
 	resp, err := c.client.Do(req.WithContext(ctx))
 	if err != nil {
-		return nil, err
+		return nil, &UnknownError{err}
 	}
 
 	defer resp.Body.Close()
 
 	if resp.StatusCode != http.StatusOK {
-		return nil, errors.New("fatzebra: not OK: " + resp.Status)
+		return nil, &UnknownError{errors.New("status not OK: " + resp.Status)}
 	}
 
 	var result purchaseResult
