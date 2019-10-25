@@ -55,6 +55,18 @@ var (
 		"maximum allowable")
 )
 
+var (
+	fromAlphabet = "0123456789ABCDEFGHIJKLMNOPQRSTUV"
+	toAlphabet   = "123456789ABCEFGHIJKLMNPRSTUVWXYZ"
+	alphabetMapping[127]byte
+)
+
+func init() {
+	for i, let := range fromAlphabet {
+		alphabetMapping[int(let)] = byte(toAlphabet[i])
+	}
+}
+
 // GenerateReference generates a random reference code, with a very very very
 // small chance of collision. A prefix is recommended for customer support
 // reasons. For instance, a person mistakes your company for another,
@@ -62,9 +74,9 @@ var (
 // contacting the wrong company if the reference code is missing the prefix).
 func GenerateReference(prefix string) string {
 	min := new(big.Int)
-	min.SetString("100000000000", 36)
+	min.SetString("100000000000", 32)
 	max := new(big.Int)
-	max.SetString("zzzzzzzzzzzz", 36)
+	max.SetString("vvvvvvvvvvvv", 32)
 
 	result, err := rand.Int(rand.Reader, max.Sub(max, min))
 	if err != nil {
@@ -72,7 +84,9 @@ func GenerateReference(prefix string) string {
 	}
 	result.Add(result, min)
 
-	return prefix + strings.ToUpper(result.Text(36))
+	return prefix + strings.Map(func(r rune) rune {
+		return rune(alphabetMapping[int(r)])
+	}, strings.ToUpper(result.Text(32)))
 }
 
 // PurchaseRequest represents a tokenized card purchase.
